@@ -1,0 +1,14 @@
+openapi: '3.1.1'
+info:
+  title: API Title
+  version: '1.0'
+servers:
+  - url: https://redesigned-zebra-v6vx4j6w67p5h675-3001.app.github.dev
+paths:
+  /v1/users/list:
+    get:
+      responses:
+        '200':
+          description: Hello world
+        '401':
+          description: Error

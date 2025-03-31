@@ -48,5 +48,79 @@ app.listen(port, () => {
 // Spit out data
 
 app.get('/', (request, response) => {
-    response.json({ info: 'Backend for GBC Library, set up by Chris K' })
+    response.json(
+        {
+            info: 'Backend for GBC Library, set up by Chris K!'
+        }
+    )
+})
+
+
+app.get("/v1/users/list", (request, response) => {
+    pool.query("SELECT fname, lname, email FROM users ORDER BY id", [], (error, result) => {
+        response.json(
+            {
+                status: "success",
+                data: result
+            }
+        )
+    });
+})
+
+app.post("/v1/users/create", (request, response) => {
+
+    const fname = request.body.fname;
+    const lname = request.body.lname;
+    const email = request.body.email;
+
+    pool.query(
+        "INSERT INTO users (fname, lname, email) VALUES (?, ?, ?)",
+        [fname, lname, email], (error, result) => {
+            response.json(
+                {
+                    status: "success",
+                    message: "New user created"
+                }
+            )
+        }
+
+    )
+
+})
+
+
+app.get("/v1/rentals/list", (request, response) => {
+    console.log(request.query.user);
+
+    const userId = request.query.user;
+
+    if (!userId) {
+        // DISPLAY ALL
+        pool.query(`SELECT title, fname, lname, start_date FROM rentals
+            INNER JOIN users ON users.id = rentals.user_id
+            INNER JOIN books ON books.id = rentals.book_id
+            ORDER BY rentals.id`, [], (error, result) => {
+            response.json(
+                {
+                    status: "success",
+                    data: result
+                }
+            )
+        });
+    } else {
+        // DISPLAY ONLY FOR USER
+        pool.query(`SELECT title, fname, lname, start_date FROM rentals
+            INNER JOIN users ON users.id = rentals.user_id
+            INNER JOIN books ON books.id = rentals.book_id
+            WHERE users.id = ?
+            ORDER BY rentals.id`, [request.query.user], (error, result) => {
+            response.json(
+                {
+                    status: "success",
+                    data: result
+                }
+            )
+        });
+    }
+
 })
