@@ -1,14 +1,136 @@
-openapi: '3.1.1'
+openapi: "3.1.1"
 info:
   title: API Title
-  version: '1.0'
+  version: "1.0"
 servers:
-  - url: https://redesigned-zebra-v6vx4j6w67p5h675-3001.app.github.dev
+  - url: https://{url}
+    variables:
+      url:
+        default: redesigned-zebra-v6vx4j6w67p5h675-3001.app.github.dev
+        description: The base URL for the API
 paths:
   /v1/users/list:
     get:
+      tags:
+      - users_get
+      summary: List users
+      description: Get a list of users
       responses:
-        '200':
+        "200":
           description: Hello world
-        '401':
+        "400":
           description: Error
+  /v1/users/get:
+    get:
+      tags:
+      - users_get
+      summary: Retrieve user details by ID.
+      description: This endpoint allows you to fetch the details of a user by providing their unique ID as a query parameter.
+      parameters:
+        - name: id
+          in: query
+          required: true
+          description: The unique identifier of the user to retrieve.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully retrieved user details.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: The unique identifier of the user.
+                  name:
+                    type: string
+                    description: The name of the user.
+                  email:
+                    type: string
+                    description: The email address of the user.
+        "400":
+          description: Bad request, possibly due to a missing or invalid ID parameter.
+        "404":
+          description: User not found for the provided ID.
+  /v1/users/create:
+            post:
+              summary: Create a new user
+              description: This endpoint allows the creation of a new user by providing their first name, last name, and email address.
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        fname:
+                          type: string
+                          description: The first name of the user.
+                          example: John
+                        lname:
+                          type: string
+                          description: The last name of the user.
+                          example: Doe
+                        email:
+                          type: string
+                          description: The email address of the user.
+                          example: john.doe@example.com
+              responses:
+                '200':
+                  description: User successfully created.
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          status:
+                            type: string
+                            description: The status of the operation.
+                            example: success
+                          message:
+                            type: string
+                            description: A message indicating the result of the operation.
+                            example: New user created
+                '400':
+                  description: Bad request. The input data is invalid or incomplete.
+                '500':
+                  description: Internal server error. An error occurred while processing the request.
+  /v1/users/remove:
+    post:
+      summary: Remove a user
+      description: This endpoint allows the removal of a user by providing their unique ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: The unique identifier of the user to remove.
+                  example: 12345
+      responses:
+        "200":
+          description: User successfully removed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: The status of the operation.
+                    example: success
+                  message:
+                    type: string
+                    description: A message indicating the result of the operation.
+                    example: User removed successfully.
+        "400":
+          description: Bad request. The ID parameter is missing or invalid.
+        "404":
+          description: User not found for the provided ID.
+        "500":
+          description: Internal server error. An error occurred while processing the request./v1/users/remove
